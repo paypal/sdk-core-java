@@ -55,6 +55,7 @@ public abstract class HttpConnection {
 			IOException, InterruptedException, HttpErrorException,
 			ClientActionRequiredException {
 		String successResponse = Constants.EMPTY_STRING, errorResponse = Constants.EMPTY_STRING;
+		int responsecode = -1;
 		BufferedReader reader = null;
 		OutputStreamWriter writer = null;
 		connection.setRequestProperty("Content-Length", ""
@@ -73,7 +74,7 @@ public abstract class HttpConnection {
 						writer.write(payload);
 						writer.flush();
 					}
-					int responsecode = connection.getResponseCode();
+					responsecode = connection.getResponseCode();
 					reader = new BufferedReader(new InputStreamReader(
 							connection.getInputStream(),
 							Constants.ENCODING_FORMAT));
@@ -81,10 +82,6 @@ public abstract class HttpConnection {
 						successResponse = read(reader);
 						LoggingManager.debug(HttpConnection.class,
 								"Response : " + successResponse);
-						if (successResponse.trim().length() <= 0) {
-							throw new InvalidResponseDataException(
-									successResponse);
-						}
 						break;
 					} else {
 						successResponse = read(reader);
@@ -93,7 +90,7 @@ public abstract class HttpConnection {
 										+ " with response : " + successResponse);
 					}
 				} catch (IOException e) {
-					int responsecode = connection.getResponseCode();
+					responsecode = connection.getResponseCode();
 					if (connection.getErrorStream() != null) {
 						reader = new BufferedReader(new InputStreamReader(
 								connection.getErrorStream(),
@@ -120,7 +117,7 @@ public abstract class HttpConnection {
 					Thread.sleep(this.config.getRetryDelay());
 				}
 			} while (retry < this.config.getMaxRetry());
-			if (successResponse.trim().length() <= 0) {
+			if (successResponse.trim().length() <= 0 && !(responsecode >= 200 && responsecode < 300)) {
 				throw new HttpErrorException(
 						"retry fails..  check log for more information");
 			}

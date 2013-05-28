@@ -61,6 +61,9 @@ public final class Constants {
 	// Constants key defined for configuration options in application properties
 	// End point
 	public static final String ENDPOINT = "service.EndPoint";
+	
+	// OAuth End point
+	public static final String OAUTH_ENDPOINT = "oauth.EndPoint";
 
 	// Service Redirect Endpoint
 	public static final String SERVICE_REDIRECT_ENDPOINT = "service.RedirectURL";

@@ -22,18 +22,22 @@ public class APIContext {
 	 * Request Id
 	 */
 	private String requestId;
-	
+
+	/**
+	 * Parameter to mask RequestId
+	 */
+	private boolean maskRequestId;
+
 	/**
 	 * Configuration Map used for dynamic configuration
 	 */
 	private Map<String, String> configurationMap;
-	
-	
+
 	/**
 	 * Default Constructor
 	 */
 	public APIContext() {
-		
+
 	}
 
 	/**
@@ -75,16 +79,20 @@ public class APIContext {
 	}
 
 	/**
-	 * Returns the unique requestId set during creation, if not available
-	 * returns a generated one
+	 * Returns the unique requestId set during creation, if not available and if
+	 * maskRequestId is set to false returns a generated one, else returns null.
 	 * 
 	 * @return requestId
 	 */
 	public String getRequestId() {
-		if (requestId == null || requestId.length() <= 0) {
-			requestId = UUID.randomUUID().toString();
+		String reqId = null;
+		if (!maskRequestId) {
+			if (requestId == null || requestId.length() <= 0) {
+				requestId = UUID.randomUUID().toString();
+			}
+			reqId = requestId;
 		}
-		return requestId;
+		return reqId;
 	}
 
 	/**
@@ -95,10 +103,19 @@ public class APIContext {
 	}
 
 	/**
-	 * @param configurationMap the configurationMap to set
+	 * @param configurationMap
+	 *            the configurationMap to set
 	 */
 	public void setConfigurationMap(Map<String, String> configurationMap) {
 		this.configurationMap = configurationMap;
+	}
+
+	/**
+	 * @param maskRequestId
+	 *            the maskRequestId to set
+	 */
+	public void setMaskRequestId(boolean maskRequestId) {
+		this.maskRequestId = maskRequestId;
 	}
 
 }

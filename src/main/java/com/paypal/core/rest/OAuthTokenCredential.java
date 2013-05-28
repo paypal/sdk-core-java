@@ -150,7 +150,11 @@ public final class OAuthTokenCredential implements ICredential {
 		HttpConfiguration httpConfiguration = new HttpConfiguration();
 		httpConfiguration
 				.setHttpMethod(Constants.HTTP_CONFIG_DEFAULT_HTTP_METHOD);
-		String endPointUrl = configurationMap.get(Constants.ENDPOINT);
+		String endPointUrl = (configurationMap.get(Constants.OAUTH_ENDPOINT) != null
+				&& configurationMap.get(Constants.OAUTH_ENDPOINT).trim()
+						.length() >= 0) ? configurationMap
+				.get(Constants.OAUTH_ENDPOINT) : configurationMap
+				.get(Constants.ENDPOINT);
 		if (endPointUrl == null || endPointUrl.trim().length() <= 0) {
 			String mode = configurationMap.get(Constants.MODE);
 			if (Constants.SANDBOX.equalsIgnoreCase(mode)) {

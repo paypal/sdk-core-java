@@ -455,7 +455,11 @@ public class MerchantAPICallPreHandler implements APICallPreHandler {
 			match.appendReplacement(sb, "'" + match.group());
 		}
 		match.appendTail(sb);
-		return sb.toString();
+		
+		// Fix json strings in element values by replacing {
+		// by '{' and matching } by '}'
+		return sb.toString().replaceAll("(?<!\\{[01]{1})}", "'}' ")
+				.replaceAll("\\{(?![01]})", "'{' ");
 	}
 
 }

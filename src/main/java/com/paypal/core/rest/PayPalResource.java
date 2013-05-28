@@ -322,7 +322,9 @@ public abstract class PayPalResource {
 					.getBaseURL().toURI().resolve(resourcePath).toString(),
 					payLoad, headers);
 			LASTRESPONSE.set(responseString);
-			t = JSONFormatter.fromJSON(responseString, clazz);
+			if (clazz != null) {
+				t = JSONFormatter.fromJSON(responseString, clazz);
+			}
 		} catch (Exception e) {
 			throw new PayPalRESTException(e.getMessage(), e);
 		}
