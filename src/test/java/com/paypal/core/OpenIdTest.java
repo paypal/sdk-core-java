@@ -28,16 +28,16 @@ public class OpenIdTest {
 	Map<String, String> configurationMap = new HashMap<String, String>();
 
 	public OpenIdTest() {
-//		 configurationMap.put("clientId", "");
-//		 configurationMap.put("clientSecret", "");
-//		 configurationMap.put("mode", "live");
+		 /*configurationMap.put("clientId", "");
+		 configurationMap.put("clientSecret", "");
+		 configurationMap.put("mode", "live");*/
 	}
 
 	@Test(enabled = false)
 	public void testCreateFromAuthorizationCodeDynamic()
 			throws PayPalRESTException, UnsupportedEncodingException {
 		CreateFromAuthorizationCodeParameters param = new CreateFromAuthorizationCodeParameters();
-		param.setCode("74N5JOwI_TDXuP6ZyhQhyw3tCk6i0B6q3ztOlMWQuNHptgQ41dQfgapu_eZ1k77U6XuHhYSwdxUXjXkagmEjr8j24AUzQa2GJPqHOh273PSmPcXO");
+		param.setCode("xxxxx");
 		APIContext apiContext = new APIContext();
 		apiContext.setConfigurationMap(configurationMap);
 		info = Tokeninfo.createFromAuthorizationCode(apiContext, param);

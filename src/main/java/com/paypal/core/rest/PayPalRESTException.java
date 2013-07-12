@@ -5,6 +5,11 @@ package com.paypal.core.rest;
  */
 public class PayPalRESTException extends Exception {
 
+	/**
+	 * Serial Version ID
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public PayPalRESTException(String message) {
 		super(message);
 	}

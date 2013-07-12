@@ -16,39 +16,27 @@ public class RESTConfigurationTestCase {
 		try {
 			Map<String, String> configurationMap = new HashMap<String, String>();
 			configurationMap.put("service.EndPoint", "https://localhost.sandbox.paypal.com");
-			RESTConfiguration restConfiguration = new RESTConfiguration(configurationMap);
-			restConfiguration.setHttpMethod(HttpMethod.POST);
+			RESTAPICallPreHandler restConfiguration = new RESTAPICallPreHandler(configurationMap);
 			restConfiguration.setResourcePath("/a/b/c");
-			restConfiguration.getHttpConfigurations();
 			URL url = restConfiguration.getBaseURL();
 			Assert.assertEquals(true, url.toString().endsWith("/"));
 		} catch (MalformedURLException e) {
 			Assert.fail();
-		} catch (URISyntaxException e) {
-			Assert.fail();
-		}
+		} 
 	}
 
 	@Test(dependsOnMethods = { "testRESTConfiguration" })
 	public void testRESTHeaderConfiguration() {
-		try {
 			Map<String, String> configurationMap = new HashMap<String, String>();
 			configurationMap.put("service.EndPoint", "https://localhost.sandbox.paypal.com");
-			RESTConfiguration restConfiguration = new RESTConfiguration(configurationMap);
-			restConfiguration.setHttpMethod(HttpMethod.POST);
+			RESTAPICallPreHandler restConfiguration = new RESTAPICallPreHandler(configurationMap);
 			restConfiguration.setResourcePath("/a/b/c");
-			restConfiguration.getHttpConfigurations();
-			Map<String, String> headers = restConfiguration.getHeaders();
+			Map<String, String> headers = restConfiguration.getHeaderMap();
 			Assert.assertEquals(headers.size() != 0, true);
 			String header = headers.get("User-Agent");
 			String[] hdrs = header.split("\\(");
 			hdrs = hdrs[1].split(";");
 			Assert.assertEquals(hdrs.length == 4, true);
-		} catch (MalformedURLException e) {
-			Assert.fail();
-		} catch (URISyntaxException e) {
-			Assert.fail();
-		}
 	}
 
 	@Test(dependsOnMethods = { "testRESTHeaderConfiguration" })
@@ -56,8 +44,7 @@ public class RESTConfigurationTestCase {
 		try {
 			Map<String, String> configurationMap = new HashMap<String, String>();
 			configurationMap.put("service.EndPoint", "https://localhost.sandbox.paypal.com");
-			RESTConfiguration restConfiguration = new RESTConfiguration(configurationMap);
-			restConfiguration.setHttpMethod(HttpMethod.POST);
+			RESTAPICallPreHandler restConfiguration = new RESTAPICallPreHandler(configurationMap);
 			restConfiguration.setResourcePath("/a/b/c");
 			String urlString = "https://sample.com";
 			restConfiguration.setUrl(urlString);

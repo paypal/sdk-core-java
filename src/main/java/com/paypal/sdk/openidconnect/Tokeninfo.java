@@ -188,15 +188,7 @@ public class Tokeninfo {
 	public static Tokeninfo createFromAuthorizationCode(
 			CreateFromAuthorizationCodeParameters createFromAuthorizationCodeParameters)
 			throws PayPalRESTException {
-		String pattern = "v1/identity/openidconnect/tokenservice ?grant_type={0}&code={1}&redirect_uri={2}";
-		Object[] parameters = new Object[] { createFromAuthorizationCodeParameters };
-		String resourcePath = RESTUtil.formatURIPath(pattern, parameters);
-		String payLoad = resourcePath.substring(resourcePath.indexOf('?') + 1);
-		resourcePath = resourcePath.substring(0, resourcePath.indexOf('?'));
-		Map<String, String> headersMap = new HashMap<String, String>();
-		headersMap.put(Constants.HTTP_CONTENT_TYPE_HEADER, Constants.HTTP_CONFIG_DEFAULT_CONTENT_TYPE);
-		return PayPalResource.configureAndExecute(null, HttpMethod.POST,
-				resourcePath, headersMap, payLoad, Tokeninfo.class);
+		return createFromAuthorizationCode(null, createFromAuthorizationCodeParameters);
 	}
 
 	/**
@@ -220,8 +212,13 @@ public class Tokeninfo {
 		resourcePath = resourcePath.substring(0, resourcePath.indexOf('?'));
 		Map<String, String> headersMap = new HashMap<String, String>();
 		headersMap.put(Constants.HTTP_CONTENT_TYPE_HEADER, Constants.HTTP_CONFIG_DEFAULT_CONTENT_TYPE);
+		if (apiContext == null) {
+			apiContext = new APIContext();
+		}
+		apiContext.setMaskRequestId(true);
+		apiContext.setHeadersMap(headersMap);
 		return PayPalResource.configureAndExecute(apiContext, HttpMethod.POST,
-				resourcePath, headersMap, payLoad, Tokeninfo.class);
+				resourcePath, payLoad, Tokeninfo.class);
 	}
 
 	/**
@@ -235,22 +232,7 @@ public class Tokeninfo {
 	public Tokeninfo createFromRefreshToken(
 			CreateFromRefreshTokenParameters createFromRefreshTokenParameters)
 			throws PayPalRESTException {
-		String pattern = "v1/identity/openidconnect/tokenservice ?grant_type={0}&refresh_token={1}&scope={2}&client_id={3}&client_secret={4}";
-		Map<String, String> paramsMap = new HashMap<String, String>();
-		paramsMap.putAll(createFromRefreshTokenParameters.getContainerMap());
-		try {
-			paramsMap.put("refresh_token", URLEncoder.encode(getRefreshToken(), "UTF-8"));
-		} catch (UnsupportedEncodingException ex) {
-			// Ignore
-		}
-		Object[] parameters = new Object[] { paramsMap };
-		String resourcePath = RESTUtil.formatURIPath(pattern, parameters);
-		String payLoad = resourcePath.substring(resourcePath.indexOf('?') + 1);
-		resourcePath = resourcePath.substring(0, resourcePath.indexOf('?'));
-		Map<String, String> headersMap = new HashMap<String, String>();
-		headersMap.put(Constants.HTTP_CONTENT_TYPE_HEADER, Constants.HTTP_CONFIG_DEFAULT_CONTENT_TYPE);
-		return PayPalResource.configureAndExecute(null, HttpMethod.POST,
-				resourcePath, headersMap, payLoad, Tokeninfo.class);
+		return createFromRefreshToken(null, createFromRefreshTokenParameters);
 	}
 
 	/**
@@ -270,7 +252,7 @@ public class Tokeninfo {
 		Map<String, String> paramsMap = new HashMap<String, String>();
 		paramsMap.putAll(createFromRefreshTokenParameters.getContainerMap());
 		try {
-			paramsMap.put("refresh_token", URLEncoder.encode(getRefreshToken(), "UTF-8"));
+			paramsMap.put("refresh_token", URLEncoder.encode(getRefreshToken(), Constants.ENCODING_FORMAT));
 		} catch (UnsupportedEncodingException ex) {
 			// Ignore
 		}
@@ -280,8 +262,13 @@ public class Tokeninfo {
 		resourcePath = resourcePath.substring(0, resourcePath.indexOf('?'));
 		Map<String, String> headersMap = new HashMap<String, String>();
 		headersMap.put(Constants.HTTP_CONTENT_TYPE_HEADER, Constants.HTTP_CONFIG_DEFAULT_CONTENT_TYPE);
+		if (apiContext == null) {
+			apiContext = new APIContext();
+		}
+		apiContext.setMaskRequestId(true);
+		apiContext.setHeadersMap(headersMap);
 		return PayPalResource.configureAndExecute(apiContext, HttpMethod.POST,
-				resourcePath, headersMap, payLoad, Tokeninfo.class);
+				resourcePath, payLoad, Tokeninfo.class);
 	}
 
 	/**

@@ -4,9 +4,11 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * <code>APIContext</code> holds wire-level parameters for the API call.
- * AccessToken is treated as a mandatory parameter. RequestId is generated if
- * not supplied
+ * <code>APIContext</code> wraps wire-level parameters for the API call.
+ * AccessToken, which is essentially a OAuth token, is treated as a mandatory
+ * parameter for (PayPal REST APIs). RequestId is generated if not supplied for
+ * marking Idempotency of the API call. OAuth token can be generated using
+ * {@link OAuthTokenCredential}
  * 
  * @author kjayakumar
  * 
@@ -14,7 +16,7 @@ import java.util.UUID;
 public class APIContext {
 
 	/**
-	 * Access Token
+	 * OAuth Token
 	 */
 	private String accessToken;
 
@@ -32,7 +34,12 @@ public class APIContext {
 	 * Configuration Map used for dynamic configuration
 	 */
 	private Map<String, String> configurationMap;
-
+	
+	/**
+	 * Custom HTTP headers
+	 */
+	private Map<String, String> headersMap;
+	
 	/**
 	 * Default Constructor
 	 */
@@ -41,10 +48,13 @@ public class APIContext {
 	}
 
 	/**
-	 * APIContext
+	 * APIContext, requestId is auto generated, calling setMaskRequestId(true)
+	 * will override the requestId getter to return null
 	 * 
 	 * @param accessToken
-	 *            AccessToken required for the call.
+	 *            OAuthToken required for the call. OAuth token used by the REST
+	 *            API service. The token should be of the form 'Bearer xxxx..'.
+	 *            See {@link OAuthTokenCredential} to generate OAuthToken
 	 */
 	public APIContext(String accessToken) {
 		if (accessToken == null || accessToken.length() <= 0) {
@@ -57,9 +67,14 @@ public class APIContext {
 	 * APIContext
 	 * 
 	 * @param accessToken
-	 *            AccessToken required for the call.
+	 *            OAuthToken required for the call. OAuth token used by the REST
+	 *            API service. The token should be of the form 'Bearer xxxx..'.
+	 *            See {@link OAuthTokenCredential} to generate OAuthToken
 	 * @param requestId
-	 *            Unique requestId required for the call.
+	 *            Unique requestId required for the call. Idempotency id,
+	 *            Calling setMaskRequestId(true) will override the requestId
+	 *            getter to return null, which can be used by the client (null
+	 *            check) to forcibly not sent requestId in the API call.
 	 */
 	public APIContext(String accessToken, String requestId) {
 		this(accessToken);
@@ -116,6 +131,20 @@ public class APIContext {
 	 */
 	public void setMaskRequestId(boolean maskRequestId) {
 		this.maskRequestId = maskRequestId;
+	}
+
+	/**
+	 * @return the headersMap
+	 */
+	public Map<String, String> getHeadersMap() {
+		return headersMap;
+	}
+
+	/**
+	 * @param headersMap the headersMap to set
+	 */
+	public void setHeadersMap(Map<String, String> headersMap) {
+		this.headersMap = headersMap;
 	}
 
 }

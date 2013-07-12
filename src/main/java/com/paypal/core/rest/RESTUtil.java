@@ -1,18 +1,27 @@
 package com.paypal.core.rest;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.paypal.sdk.openidconnect.CreateFromAuthorizationCodeParameters;
 import com.paypal.sdk.openidconnect.CreateFromRefreshTokenParameters;
 import com.paypal.sdk.openidconnect.UserinfoParameters;
 
-
+/**
+ * <code>RESTUtil</code> acts as utility class used by REST API system
+ * 
+ * @author kjayakumar
+ * 
+ */
 public final class RESTUtil {
-	
-	private RESTUtil() {}
+
+	private RESTUtil() {
+	}
 
 	/**
 	 * Formats the URI path for REST calls.
@@ -27,25 +36,31 @@ public final class RESTUtil {
 		String formattedPath = null;
 		Object[] finalParameters = null;
 		if (pattern != null) {
-			if (parameters != null && parameters.length == 1
+			if (parameters != null
+					&& parameters.length == 1
 					&& parameters[0] instanceof CreateFromAuthorizationCodeParameters) {
 
-				// Form a object array using the passed CreateFromAuthorizationCodeParameters
+				// Form a object array using the passed
+				// CreateFromAuthorizationCodeParameters
 				finalParameters = splitParameters(pattern,
-						((CreateFromAuthorizationCodeParameters) parameters[0]).getContainerMap());
-			} if (parameters != null && parameters.length == 1
+						((CreateFromAuthorizationCodeParameters) parameters[0])
+								.getContainerMap());
+			} else if (parameters != null
+					&& parameters.length == 1
 					&& parameters[0] instanceof CreateFromRefreshTokenParameters) {
 
-				// Form a object array using the passed CreateFromRefreshTokenParameters
+				// Form a object array using the passed
+				// CreateFromRefreshTokenParameters
 				finalParameters = splitParameters(pattern,
-						((CreateFromRefreshTokenParameters) parameters[0]).getContainerMap());
-			} if (parameters != null && parameters.length == 1
+						((CreateFromRefreshTokenParameters) parameters[0])
+								.getContainerMap());
+			} else if (parameters != null && parameters.length == 1
 					&& parameters[0] instanceof UserinfoParameters) {
 
 				// Form a object array using the passed UserinfoParameters
 				finalParameters = splitParameters(pattern,
 						((UserinfoParameters) parameters[0]).getContainerMap());
-			} if (parameters != null && parameters.length == 1
+			} else if (parameters != null && parameters.length == 1
 					&& parameters[0] instanceof QueryParameters) {
 
 				// Form a object array using the passed UserinfoParameters
@@ -53,14 +68,14 @@ public final class RESTUtil {
 						((QueryParameters) parameters[0]).getContainerMap());
 			} else if (parameters != null && parameters.length == 1
 					&& parameters[0] instanceof Map<?, ?>) {
-				
+
 				// Form a object array using the passed Map
 				finalParameters = splitParameters(pattern,
 						((Map<?, ?>) parameters[0]));
 			} else {
 				finalParameters = parameters;
 			}
-			
+
 			// Perform a simple message formatting
 			String fString = MessageFormat.format(pattern, finalParameters);
 
@@ -68,6 +83,85 @@ public final class RESTUtil {
 			formattedPath = removeNullsInQS(fString);
 		}
 		return formattedPath;
+	}
+
+	/**
+	 * Formats the URI path for REST calls. Replaces any occurrences of the form
+	 * {name} in pattern with the corresponding value of key name in the passes
+	 * {@link Map}
+	 * 
+	 * @param pattern
+	 *            URI pattern with named place holders
+	 * @param pathParameters
+	 *            Parameter {@link Map}
+	 * @return Processed URI path
+	 * @throws PayPalRESTException
+	 */
+	public static String formatURIPath(String pattern,
+			Map<String, String> pathParameters) throws PayPalRESTException {
+		return formatURIPath(pattern, pathParameters, null);
+	}
+
+	/**
+	 * Formats the URI path for REST calls. Replaces any occurrences of the form
+	 * {name} in pattern with the corresponding value of key name in the passes
+	 * {@link Map}. Query parameters are appended to the end of the URI path
+	 * 
+	 * @param pattern
+	 *            URI pattern with named place holders
+	 * @param pathParameters
+	 *            Parameter {@link Map}
+	 * @param queryParameters
+	 *            Query parameters {@link Map}
+	 * @return Processed URI path
+	 * @throws PayPalRESTException
+	 */
+	public static String formatURIPath(String pattern,
+			Map<String, String> pathParameters,
+			Map<String, String> queryParameters) throws PayPalRESTException {
+		String formattedURIPath = null;
+		if (pattern != null && pattern.trim().length() > 0
+				&& pathParameters != null && pathParameters.size() > 0) {
+			for (Entry<String, String> entry : pathParameters.entrySet()) {
+				String placeHolderName = "{" + entry.getKey().trim() + "}";
+				if (pattern.contains(placeHolderName)) {
+					pattern = pattern.replace(placeHolderName, entry.getValue()
+							.trim());
+				}
+			}
+
+		}
+		formattedURIPath = pattern;
+		if (queryParameters != null && queryParameters.size() > 0) {
+			StringBuilder stringBuilder = new StringBuilder(formattedURIPath);
+			if (stringBuilder.toString().contains("?")) {
+				if (!(stringBuilder.toString().endsWith("?")
+						|| stringBuilder.toString().endsWith("&"))) {
+					stringBuilder.append("&");
+				}
+			} else {
+				stringBuilder.append("?");
+			}
+			for (Entry<String, String> entry : queryParameters.entrySet()) {
+				try {
+					stringBuilder
+							.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
+							.append("=")
+							.append(URLEncoder.encode(entry.getValue(), "UTF-8"))
+							.append("&");
+				} catch (UnsupportedEncodingException e) {
+					// TODO
+				}
+			}
+			formattedURIPath = stringBuilder.toString();
+		}
+		if (formattedURIPath.contains("{") || formattedURIPath.contains("}")) {
+			throw new PayPalRESTException("Unable to formatURI Path : "
+					+ formattedURIPath
+					+ ", unable to replace placeholders with the map : "
+					+ pathParameters);
+		}
+		return formattedURIPath;
 	}
 
 	/**

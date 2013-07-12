@@ -54,6 +54,15 @@ public final class Constants {
 
 	// PayPal Device IP Address Header
 	public static final String PAYPAL_DEVICE_IPADDRESS_HEADER = "X-PAYPAL-DEVICE-IPADDRESS";
+	
+	// User Agent Header
+	public static final String USER_AGENT_HEADER = "User-Agent";
+	
+	// PayPal Request ID Header
+	public static final String PAYPAL_REQUEST_ID_HEADER = "PayPal-Request-Id";
+	
+	// Authorization Header
+	public static final String AUTHORIZATION_HEADER = "Authorization";
 
 	// PayPal Sandbox Email Address for AA Header
 	public static final String PAYPAL_SANDBOX_EMAIL_ADDRESS_HEADER = "X-PAYPAL-SANDBOX-EMAIL-ADDRESS";
