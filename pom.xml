@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.paypal.sdk</groupId>
 	<artifactId>paypal-core</artifactId>
-	<version>1.4.3</version>
+	<version>1.4.4</version>
 	<packaging>jar</packaging>
 	<name>paypal-core</name>
 	<description>PayPal Java SDK Core library base and common to PayPal SDKs. The paypal-core library is a dependency for all PayPal related Java SDKs</description>

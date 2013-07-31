@@ -74,7 +74,7 @@ public final class OAuthTokenCredential implements ICredential {
 	/**
 	 * Computes Access Token by placing a call to OAuth server using ClientID
 	 * and ClientSecret. The token is appended to the token type.
-	 * 
+	 *
 	 * @return the accessToken
 	 * @throws PayPalRESTException
 	 */
@@ -162,6 +162,24 @@ public final class OAuthTokenCredential implements ICredential {
 			} else if (Constants.LIVE.equalsIgnoreCase(mode)) {
 				endPointUrl = Constants.REST_LIVE_ENDPOINT;
 			}
+		}
+		if (Boolean
+			.parseBoolean(configurationMap.get(Constants.USE_HTTP_PROXY))) {
+		    httpConfiguration.setProxySet(true);
+		    httpConfiguration.setProxyHost(configurationMap
+			    .get(Constants.HTTP_PROXY_HOST));
+		    httpConfiguration.setProxyPort(Integer.parseInt(configurationMap
+			    .get(Constants.HTTP_PROXY_PORT)));
+
+		    String proxyUserName = configurationMap
+			    .get(Constants.HTTP_PROXY_USERNAME);
+		    String proxyPassword = configurationMap
+			    .get(Constants.HTTP_PROXY_PASSWORD);
+
+		    if (proxyUserName != null && proxyPassword != null) {
+			httpConfiguration.setProxyUserName(proxyUserName);
+			httpConfiguration.setProxyPassword(proxyPassword);
+		    }
 		}
 		endPointUrl = (endPointUrl.endsWith("/")) ? endPointUrl.substring(0,
 				endPointUrl.length() - 1) : endPointUrl;

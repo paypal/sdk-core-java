@@ -29,7 +29,7 @@ public abstract class PayPalResource {
 	/**
 	 * SDK Version used in User-Agent HTTP header
 	 */
-	public static final String SDK_VERSION = "0.7.0";
+	public static final String SDK_VERSION = "0.7.1";
 
 	/**
 	 * Map used in dynamic configuration

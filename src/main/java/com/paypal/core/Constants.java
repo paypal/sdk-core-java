@@ -151,7 +151,7 @@ public final class Constants {
 	public static final String IPN_SANDBOX_ENDPOINT = "https://www.sandbox.paypal.com/cgi-bin/webscr";
 
 	// IPN Live Endpoint
-	public static final String IPN_LIVE_ENDPOINT = "https://ipnpb.paypal.com/cgi-bin/websc";
+	public static final String IPN_LIVE_ENDPOINT = "https://ipnpb.paypal.com/cgi-bin/webscr";
 
 	// Merchant Sandbox Endpoint Signature
 	public static final String MERCHANT_SANDBOX_SIGNATURE_ENDPOINT = "https://api-3t.sandbox.paypal.com/2.0";
