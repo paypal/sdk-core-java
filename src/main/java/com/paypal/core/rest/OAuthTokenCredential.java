@@ -87,6 +87,19 @@ public final class OAuthTokenCredential implements ICredential {
 		}
 		return accessToken;
 	}
+	
+	/**
+	 * Computes Access Token by doing a Base64 encoding on the ClientID
+	 * and ClientSecret. The token is appended to the String "Basic ".
+	 *
+	 * @return the accessToken
+	 * @throws PayPalRESTException
+	 */
+	public String getAuthorizationHeader() throws PayPalRESTException {
+		String base64EncodedString = generateBase64String(clientID + ":"
+				+ clientSecret);
+		return "Basic " + base64EncodedString;
+	}
 
 	private String generateAccessToken() throws PayPalRESTException {
 		String generatedToken = null;
@@ -99,12 +112,12 @@ public final class OAuthTokenCredential implements ICredential {
 	/*
 	 * Generate a Base64 encoded String from clientID & clientSecret
 	 */
-	private String generateBase64String(String clientID)
+	private String generateBase64String(String clientCredentials)
 			throws PayPalRESTException {
 		String base64ClientID = null;
 		byte[] encoded = null;
 		try {
-			encoded = Base64.encodeBase64(clientID.getBytes("UTF-8"));
+			encoded = Base64.encodeBase64(clientCredentials.getBytes("UTF-8"));
 			base64ClientID = new String(encoded, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new PayPalRESTException(e.getMessage(), e);

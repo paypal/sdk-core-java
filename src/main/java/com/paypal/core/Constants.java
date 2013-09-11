@@ -183,8 +183,11 @@ public final class Constants {
 	// Open Id redirect URI
 	public static final String OPENID_REDIRECT_URI = "openid.RedirectUri";
 
-	// Open Id redirect URI Constant
-	public static final String OPENID_REDIRECT_URI_CONSTANT = "https://www.paypal.com/webapps/auth/protocol/openidconnect";
+	// Open Id redirect URI Constant Live
+	public static final String OPENID_REDIRECT_URI_CONSTANT_LIVE = "https://www.paypal.com/webapps/auth/protocol/openidconnect";
+	
+	// Open Id redirect URI Constant Sandbox
+	public static final String OPENID_REDIRECT_URI_CONSTANT_SANDBOX = "https://www.sanbox.paypal.com/webapps/auth/protocol/openidconnect";
 
 	// Client ID
 	public static final String CLIENT_ID = "clientId";

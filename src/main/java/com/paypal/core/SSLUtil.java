@@ -34,7 +34,7 @@ public abstract class SSLUtil {
 		try {
 			
 			// Initialize KeyManagerFactory and local KeyStore cache
-			KMF = KeyManagerFactory.getInstance("SunX509");
+			KMF = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			STOREMAP = new HashMap<String, KeyStore>();
 		} catch (NoSuchAlgorithmException e) {
 			throw new ExceptionInInitializerError(e);

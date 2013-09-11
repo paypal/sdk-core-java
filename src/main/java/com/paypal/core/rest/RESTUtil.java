@@ -1,18 +1,21 @@
 package com.paypal.core.rest;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.paypal.core.Constants;
 import com.paypal.sdk.openidconnect.CreateFromAuthorizationCodeParameters;
 import com.paypal.sdk.openidconnect.CreateFromRefreshTokenParameters;
 import com.paypal.sdk.openidconnect.UserinfoParameters;
 
-
 public final class RESTUtil {
-	
-	private RESTUtil() {}
+
+	private RESTUtil() {
+	}
 
 	/**
 	 * Formats the URI path for REST calls.
@@ -27,25 +30,31 @@ public final class RESTUtil {
 		String formattedPath = null;
 		Object[] finalParameters = null;
 		if (pattern != null) {
-			if (parameters != null && parameters.length == 1
+			if (parameters != null
+					&& parameters.length == 1
 					&& parameters[0] instanceof CreateFromAuthorizationCodeParameters) {
 
-				// Form a object array using the passed CreateFromAuthorizationCodeParameters
+				// Form a object array using the passed
+				// CreateFromAuthorizationCodeParameters
 				finalParameters = splitParameters(pattern,
-						((CreateFromAuthorizationCodeParameters) parameters[0]).getContainerMap());
-			} if (parameters != null && parameters.length == 1
+						((CreateFromAuthorizationCodeParameters) parameters[0])
+								.getContainerMap());
+			} else if (parameters != null
+					&& parameters.length == 1
 					&& parameters[0] instanceof CreateFromRefreshTokenParameters) {
 
-				// Form a object array using the passed CreateFromRefreshTokenParameters
+				// Form a object array using the passed
+				// CreateFromRefreshTokenParameters
 				finalParameters = splitParameters(pattern,
-						((CreateFromRefreshTokenParameters) parameters[0]).getContainerMap());
-			} if (parameters != null && parameters.length == 1
+						((CreateFromRefreshTokenParameters) parameters[0])
+								.getContainerMap());
+			} else if (parameters != null && parameters.length == 1
 					&& parameters[0] instanceof UserinfoParameters) {
 
 				// Form a object array using the passed UserinfoParameters
 				finalParameters = splitParameters(pattern,
 						((UserinfoParameters) parameters[0]).getContainerMap());
-			} if (parameters != null && parameters.length == 1
+			} else if (parameters != null && parameters.length == 1
 					&& parameters[0] instanceof QueryParameters) {
 
 				// Form a object array using the passed UserinfoParameters
@@ -53,14 +62,14 @@ public final class RESTUtil {
 						((QueryParameters) parameters[0]).getContainerMap());
 			} else if (parameters != null && parameters.length == 1
 					&& parameters[0] instanceof Map<?, ?>) {
-				
+
 				// Form a object array using the passed Map
 				finalParameters = splitParameters(pattern,
 						((Map<?, ?>) parameters[0]));
 			} else {
 				finalParameters = parameters;
 			}
-			
+
 			// Perform a simple message formatting
 			String fString = MessageFormat.format(pattern, finalParameters);
 
@@ -139,7 +148,12 @@ public final class RESTUtil {
 						String key = params[0].trim();
 						if (containerMap.containsKey(key)) {
 							Object object = containerMap.get(key);
-							objectList.add(object);
+							try {
+								objectList.add(URLEncoder.encode(
+										(String) object, Constants.ENCODING_FORMAT));
+							} catch (UnsupportedEncodingException e) {
+								// Ignore
+							}
 						} else {
 							objectList.add(null);
 						}

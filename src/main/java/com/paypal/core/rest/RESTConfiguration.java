@@ -200,6 +200,9 @@ public class RESTConfiguration {
 		if (requestId != null && requestId.length() > 0) {
 			headers.put("PayPal-Request-Id", requestId);
 		}
+		if (headersMap != null && headersMap.size() > 0) {
+			headers.putAll(headersMap);
+		}
 		return headers;
 	}
 

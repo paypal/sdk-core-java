@@ -3,7 +3,9 @@ package com.paypal.sdk.openidconnect;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateFromAuthorizationCodeParameters {
+import com.paypal.core.ClientCredentials;
+
+public class CreateFromAuthorizationCodeParameters extends ClientCredentials {
 
 	/**
 	 * Code

@@ -177,7 +177,7 @@ public abstract class HttpConnection {
 			Map.Entry<String, String> pairs = itr.next();
 			String key = pairs.getKey();
 			String value = pairs.getValue();
-			this.connection.addRequestProperty(key, value);
+			this.connection.setRequestProperty(key, value);
 		}
 	}
 

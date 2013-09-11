@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.paypal.core.ClientCredentials;
 import com.paypal.core.ConfigManager;
 import com.paypal.core.Constants;
 import com.paypal.core.SDKUtil;
@@ -37,6 +38,11 @@ public final class Session {
 	 */
 	public static String getRedirectURL(String redirectURI, List<String> scope,
 			APIContext apiContext) {
+		return getRedirectURL(redirectURI, scope, apiContext, null);
+	}
+
+	public static String getRedirectURL(String redirectURI, List<String> scope,
+			APIContext apiContext, ClientCredentials clientCredentials) {
 		String redirectURL = null;
 		Map<String, String> configurationMap = null;
 		try {
@@ -50,7 +56,23 @@ public final class Session {
 			String baseURL = configurationMap
 					.get(Constants.OPENID_REDIRECT_URI);
 			if (baseURL == null || baseURL.trim().length() <= 0) {
-				baseURL = Constants.OPENID_REDIRECT_URI_CONSTANT;
+				if (configurationMap.get(Constants.MODE) == null
+						|| !Constants.LIVE.equalsIgnoreCase(configurationMap
+								.get(Constants.MODE))
+						|| !Constants.SANDBOX.equalsIgnoreCase(configurationMap
+								.get(Constants.MODE))) {
+					throw new RuntimeException(
+							"Mode parameter not set in dynamic configuration map");
+				} else {
+					if (Constants.LIVE.equalsIgnoreCase(configurationMap
+							.get(Constants.MODE))) {
+						baseURL = Constants.OPENID_REDIRECT_URI_CONSTANT_LIVE;
+					} else if (Constants.SANDBOX
+							.equalsIgnoreCase(configurationMap
+									.get(Constants.MODE))) {
+						baseURL = Constants.OPENID_REDIRECT_URI_CONSTANT_SANDBOX;
+					}
+				}
 			}
 			if (scope == null || scope.size() <= 0) {
 				scope = new ArrayList<String>();
@@ -60,18 +82,28 @@ public final class Session {
 				scope.add("email");
 				scope.add("phone");
 				scope.add("https://uri.paypal.com/services/paypalattributes");
+				scope.add("https://uri.paypal.com/services/expresscheckout");
 			}
 			if (!scope.contains("openid")) {
 				scope.add("openid");
 			}
 			StringBuilder stringBuilder = new StringBuilder();
+
+			// TODO revisit method while removing the similar method without
+			// ClientCredentials
+			String clientID = null;
+			if (clientCredentials == null) {
+				clientID = configurationMap.get(Constants.CLIENT_ID) != null ? configurationMap
+						.get(Constants.CLIENT_ID) : "";
+			} else {
+				clientID = clientCredentials.getClientID() != null ? clientCredentials
+						.getClientID() : "";
+			}
 			stringBuilder
 					.append("client_id=")
-					.append(URLEncoder.encode(
-							configurationMap.get(Constants.CLIENT_ID) != null ? configurationMap
-									.get(Constants.CLIENT_ID) : "",
-							Constants.ENCODING_FORMAT)).append("&response_type=")
-					.append("code").append("&scope=");
+					.append(URLEncoder.encode(clientID,
+							Constants.ENCODING_FORMAT))
+					.append("&response_type=").append("code").append("&scope=");
 			StringBuilder scpBuilder = new StringBuilder();
 			for (String str : scope) {
 				scpBuilder.append(str).append(" ");
@@ -116,7 +148,23 @@ public final class Session {
 			String baseURL = configurationMap
 					.get(Constants.OPENID_REDIRECT_URI);
 			if (baseURL == null || baseURL.trim().length() <= 0) {
-				baseURL = Constants.OPENID_REDIRECT_URI_CONSTANT;
+				if (configurationMap.get(Constants.MODE) == null
+						|| !Constants.LIVE.equalsIgnoreCase(configurationMap
+								.get(Constants.MODE))
+						|| !Constants.SANDBOX.equalsIgnoreCase(configurationMap
+								.get(Constants.MODE))) {
+					throw new RuntimeException(
+							"Mode parameter not set in dynamic configuration map");
+				} else {
+					if (Constants.LIVE.equalsIgnoreCase(configurationMap
+							.get(Constants.MODE))) {
+						baseURL = Constants.OPENID_REDIRECT_URI_CONSTANT_LIVE;
+					} else if (Constants.SANDBOX
+							.equalsIgnoreCase(configurationMap
+									.get(Constants.MODE))) {
+						baseURL = Constants.OPENID_REDIRECT_URI_CONSTANT_SANDBOX;
+					}
+				}
 			}
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder
