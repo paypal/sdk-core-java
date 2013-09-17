@@ -6,12 +6,19 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.paypal.core.Constants;
 import com.paypal.sdk.openidconnect.CreateFromAuthorizationCodeParameters;
 import com.paypal.sdk.openidconnect.CreateFromRefreshTokenParameters;
 import com.paypal.sdk.openidconnect.UserinfoParameters;
 
+/**
+ * <code>RESTUtil</code> acts as utility class used by REST API system
+ * 
+ * @author kjayakumar
+ * 
+ */
 public final class RESTUtil {
 
 	private RESTUtil() {
@@ -77,6 +84,85 @@ public final class RESTUtil {
 			formattedPath = removeNullsInQS(fString);
 		}
 		return formattedPath;
+	}
+
+	/**
+	 * Formats the URI path for REST calls. Replaces any occurrences of the form
+	 * {name} in pattern with the corresponding value of key name in the passes
+	 * {@link Map}
+	 * 
+	 * @param pattern
+	 *            URI pattern with named place holders
+	 * @param pathParameters
+	 *            Parameter {@link Map}
+	 * @return Processed URI path
+	 * @throws PayPalRESTException
+	 */
+	public static String formatURIPath(String pattern,
+			Map<String, String> pathParameters) throws PayPalRESTException {
+		return formatURIPath(pattern, pathParameters, null);
+	}
+
+	/**
+	 * Formats the URI path for REST calls. Replaces any occurrences of the form
+	 * {name} in pattern with the corresponding value of key name in the passes
+	 * {@link Map}. Query parameters are appended to the end of the URI path
+	 * 
+	 * @param pattern
+	 *            URI pattern with named place holders
+	 * @param pathParameters
+	 *            Parameter {@link Map}
+	 * @param queryParameters
+	 *            Query parameters {@link Map}
+	 * @return Processed URI path
+	 * @throws PayPalRESTException
+	 */
+	public static String formatURIPath(String pattern,
+			Map<String, String> pathParameters,
+			Map<String, String> queryParameters) throws PayPalRESTException {
+		String formattedURIPath = null;
+		if (pattern != null && pattern.trim().length() > 0
+				&& pathParameters != null && pathParameters.size() > 0) {
+			for (Entry<String, String> entry : pathParameters.entrySet()) {
+				String placeHolderName = "{" + entry.getKey().trim() + "}";
+				if (pattern.contains(placeHolderName)) {
+					pattern = pattern.replace(placeHolderName, entry.getValue()
+							.trim());
+				}
+			}
+
+		}
+		formattedURIPath = pattern;
+		if (queryParameters != null && queryParameters.size() > 0) {
+			StringBuilder stringBuilder = new StringBuilder(formattedURIPath);
+			if (stringBuilder.toString().contains("?")) {
+				if (!(stringBuilder.toString().endsWith("?")
+						|| stringBuilder.toString().endsWith("&"))) {
+					stringBuilder.append("&");
+				}
+			} else {
+				stringBuilder.append("?");
+			}
+			for (Entry<String, String> entry : queryParameters.entrySet()) {
+				try {
+					stringBuilder
+							.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
+							.append("=")
+							.append(URLEncoder.encode(entry.getValue(), "UTF-8"))
+							.append("&");
+				} catch (UnsupportedEncodingException e) {
+					// TODO
+				}
+			}
+			formattedURIPath = stringBuilder.toString();
+		}
+		if (formattedURIPath.contains("{") || formattedURIPath.contains("}")) {
+			throw new PayPalRESTException("Unable to formatURI Path : "
+					+ formattedURIPath
+					+ ", unable to replace placeholders with the map : "
+					+ pathParameters);
+		}
+		return formattedURIPath;
 	}
 
 	/**

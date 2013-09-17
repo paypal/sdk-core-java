@@ -13,8 +13,14 @@ import java.util.Set;
 import com.paypal.sdk.util.ResourceLoader;
 
 /**
- * <code>ConfigManager</code> loads the configuration file and hands out
- * appropriate parameters to application
+ * <code>ConfigManager</code> loads configuration from 'skd_config.properties'
+ * file found in the classpath. There are certain default parameters that the
+ * system chooses to use if not seen a part of the configuration. They are
+ * enumerated below with the defaults is parenthesis
+ * 
+ * http.ConnectionTimeOut(5000 ms), http.Retry(2), http.ReadTimeOut(30000 ms),
+ * http.MaxConnections(100), http.IPAddress(127.0.0.1),
+ * http.GoogleAppEngine(false)
  * 
  */
 public final class ConfigManager {
@@ -60,10 +66,8 @@ public final class ConfigManager {
 		DEFAULT_PROPERTIES.put(Constants.GOOGLE_APP_ENGINE, "false");
 		defaultMapView = new HashMap<String, String>();
 		for (Object object : DEFAULT_PROPERTIES.keySet()) {
-			defaultMapView.put(
-					object.toString().trim(),
-					DEFAULT_PROPERTIES.getProperty(
-							object.toString()).trim());
+			defaultMapView.put(object.toString().trim(), DEFAULT_PROPERTIES
+					.getProperty(object.toString()).trim());
 		}
 	}
 
@@ -71,6 +75,10 @@ public final class ConfigManager {
 	 * Private constructor
 	 */
 	private ConfigManager() {
+
+		/*
+		 * Load configuration for default 'sdk_config.properties'
+		 */
 		ResourceLoader resourceLoader = new ResourceLoader(
 				Constants.DEFAULT_CONFIGURATION_FILE);
 		try {
@@ -177,7 +185,9 @@ public final class ConfigManager {
 	}
 
 	/**
-	 * Constructs a {@link Map} object from the underlying {@link Properties}
+	 * Constructs a {@link Map} object from the underlying {@link Properties}.
+	 * The {@link Properties} object is loaded for 'sdk_config.properties' file
+	 * in the classpath
 	 * 
 	 * @return {@link Map}
 	 */

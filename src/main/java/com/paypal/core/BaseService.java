@@ -46,13 +46,12 @@ public abstract class BaseService {
 	 * Last response received
 	 */
 	private String lastResponse = null;
-
+	
 	/**
 	 * Default Constructor
 	 */
 	public BaseService() {
-		configurationMap = SDKUtil.combineDefaultMap(ConfigManager
-				.getInstance().getConfigurationMap());
+		
 	}
 
 	/**
@@ -159,6 +158,14 @@ public abstract class BaseService {
 	 */
 	public void setLastResponse(String lastResponse) {
 		this.lastResponse = lastResponse;
+	}
+	
+	/**
+	 * Initialize from sdk_config.properties
+	 */
+	protected void initializeToDefault() {
+		configurationMap = SDKUtil.combineDefaultMap(ConfigManager
+				.getInstance().getConfigurationMap());
 	}
 
 	/**

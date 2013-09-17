@@ -78,8 +78,6 @@ public class DefaultHttpConnection extends HttpConnection {
 		System.setProperty("http.maxConnections",
 				String.valueOf(this.config.getMaxHttpConnection()));
 		System.setProperty("sun.net.http.errorstream.enableBuffering", "true");
-		this.connection.setRequestProperty(Constants.HTTP_CONTENT_TYPE_HEADER,
-				config.getContentType());
 		this.connection.setDoInput(true);
 		this.connection.setDoOutput(true);
 		this.connection.setRequestMethod(config.getHttpMethod());

@@ -3,18 +3,25 @@ package com.paypal.core.rest;
 import java.util.Map;
 import java.util.UUID;
 
+import com.paypal.core.BaseAPIContext;
+import com.paypal.core.SDKVersion;
+
 /**
- * <code>APIContext</code> holds wire-level parameters for the API call.
- * AccessToken is treated as a mandatory parameter. RequestId is generated if
- * not supplied
+ * <code>APIContext</code> wraps wire-level parameters for the API call.
+ * AccessToken, which is essentially an OAuth token, is treated as a mandatory
+ * parameter for (PayPal REST APIs). RequestId is generated if not supplied for
+ * marking Idempotency of the API call. OAuth token can be generated using
+ * {@link OAuthTokenCredential}. The Application Header property may be used by
+ * clients to access application level headers. The clients are responsible to
+ * cast the Application Header property to appropriate type.
  * 
  * @author kjayakumar
  * 
  */
-public class APIContext {
+public class APIContext extends BaseAPIContext {
 
 	/**
-	 * Access Token
+	 * OAuth Token
 	 */
 	private String accessToken;
 
@@ -27,26 +34,30 @@ public class APIContext {
 	 * Parameter to mask RequestId
 	 */
 	private boolean maskRequestId;
-
+	
 	/**
-	 * Configuration Map used for dynamic configuration
+	 * {@link SDKVersion} instance
 	 */
-	private Map<String, String> configurationMap;
+	private SDKVersion sdkVersion;
 
 	/**
 	 * Default Constructor
 	 */
 	public APIContext() {
-
+		super();
 	}
 
 	/**
-	 * APIContext
+	 * APIContext, requestId is auto generated, calling setMaskRequestId(true)
+	 * will override the requestId getter to return null
 	 * 
 	 * @param accessToken
-	 *            AccessToken required for the call.
+	 *            OAuthToken required for the call. OAuth token used by the REST
+	 *            API service. The token should be of the form 'Bearer xxxx..'.
+	 *            See {@link OAuthTokenCredential} to generate OAuthToken
 	 */
 	public APIContext(String accessToken) {
+		super();
 		if (accessToken == null || accessToken.length() <= 0) {
 			throw new IllegalArgumentException("AccessToken cannot be null");
 		}
@@ -57,9 +68,14 @@ public class APIContext {
 	 * APIContext
 	 * 
 	 * @param accessToken
-	 *            AccessToken required for the call.
+	 *            OAuthToken required for the call. OAuth token used by the REST
+	 *            API service. The token should be of the form 'Bearer xxxx..'.
+	 *            See {@link OAuthTokenCredential} to generate OAuthToken
 	 * @param requestId
-	 *            Unique requestId required for the call.
+	 *            Unique requestId required for the call. Idempotency id,
+	 *            Calling setMaskRequestId(true) will override the requestId
+	 *            getter to return null, which can be used by the client (null
+	 *            check) to forcibly not sent requestId in the API call.
 	 */
 	public APIContext(String accessToken, String requestId) {
 		this(accessToken);
@@ -96,26 +112,42 @@ public class APIContext {
 	}
 
 	/**
-	 * @return the configurationMap
-	 */
-	public Map<String, String> getConfigurationMap() {
-		return configurationMap;
-	}
-
-	/**
-	 * @param configurationMap
-	 *            the configurationMap to set
-	 */
-	public void setConfigurationMap(Map<String, String> configurationMap) {
-		this.configurationMap = configurationMap;
-	}
-
-	/**
 	 * @param maskRequestId
 	 *            the maskRequestId to set
 	 */
 	public void setMaskRequestId(boolean maskRequestId) {
 		this.maskRequestId = maskRequestId;
+	}
+
+	/**
+	 * @return the sdkVersion
+	 */
+	public SDKVersion getSdkVersion() {
+		return sdkVersion;
+	}
+
+	/**
+	 * @param sdkVersion the sdkVersion to set
+	 */
+	public void setSdkVersion(SDKVersion sdkVersion) {
+		this.sdkVersion = sdkVersion;
+	}
+
+	/**
+	 * @deprecated Use getHTTPHeaders() instead
+	 * @return the headersMap
+	 */
+	public Map<String, String> getHeadersMap() {
+		return super.getHTTPHeaders();
+	}
+
+	/**
+	 * @deprecated
+	 * @param headersMap
+	 *            the headersMap to set
+	 */
+	public void setHeadersMap(Map<String, String> headersMap) {
+		super.setHTTPHeaders(headersMap);
 	}
 
 }

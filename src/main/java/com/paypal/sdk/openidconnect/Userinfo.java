@@ -440,12 +440,7 @@ public class Userinfo {
 	 */
 	public static Userinfo getUserinfo(UserinfoParameters userinfoParameters)
 			throws PayPalRESTException {
-		String pattern = "v1/identity/openidconnect/userinfo?schema={0}&access_token={1}";
-		Object[] parameters = new Object[] { userinfoParameters };
-		String resourcePath = RESTUtil.formatURIPath(pattern, parameters);
-		String payLoad = "";
-		return PayPalResource.configureAndExecute(null, HttpMethod.GET,
-				resourcePath, null, payLoad, Userinfo.class);
+		return getUserinfo(null, userinfoParameters);
 	}
 
 	/**
@@ -465,7 +460,7 @@ public class Userinfo {
 		String resourcePath = RESTUtil.formatURIPath(pattern, parameters);
 		String payLoad = "";
 		return PayPalResource.configureAndExecute(apiContext, HttpMethod.GET,
-				resourcePath, null, payLoad, Userinfo.class);
+				resourcePath, payLoad, Userinfo.class);
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package com.paypal.core;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,8 +12,9 @@ import java.util.regex.Pattern;
  * 
  */
 public final class SDKUtil {
-	
-	private SDKUtil() {}
+
+	private SDKUtil() {
+	}
 
 	/**
 	 * Pattern for replacing Ampersand '&' character
@@ -171,6 +173,24 @@ public final class SDKUtil {
 		}
 		return response;
 	}
+	
+	/**
+	 * Method replaces invalid XML entities with proper escapes, this method
+	 * depends on regular expressions
+	 * 
+	 * @param longContent
+	 *            Long object
+	 * @return Replaced text
+	 */
+	public static String escapeInvalidXmlCharsRegex(Long longContent) {
+		String response = null;
+		String textContent = null;
+		if (longContent != null) {
+			textContent = longContent.toString();
+			response = escapeInvalidXmlCharsRegex(textContent);
+		}
+		return response;
+	}
 
 	/**
 	 * Method replaces invalid XML entities with proper escapes, this method
@@ -207,10 +227,29 @@ public final class SDKUtil {
 		}
 		return response;
 	}
+	
+	/**
+	 * Method replaces invalid XML entities with proper escapes, this method
+	 * depends on regular expressions
+	 * 
+	 * @param floatContent
+	 *            Float object
+	 * @return Replaced text
+	 */
+	public static String escapeInvalidXmlCharsRegex(Float floatContent) {
+		String response = null;
+		String textContent = null;
+		if (floatContent != null) {
+			textContent = floatContent.toString();
+			response = escapeInvalidXmlCharsRegex(textContent);
+		}
+		return response;
+	}
 
 	/**
 	 * Constructs a Map<String, String> from a {@link Properties} object by
-	 * combining the default values from Default {@link Properties}
+	 * combining the default values. See {@link ConfigManager} for default
+	 * values
 	 * 
 	 * @param properties
 	 *            Input {@link Properties}
@@ -234,13 +273,15 @@ public final class SDKUtil {
 	}
 
 	/**
-	 * Combines some {@link Map} with Default {@link Map}
+	 * Combines some {@link Map} with default values. See {@link ConfigManager}
+	 * for default values.
 	 * 
 	 * @param receivedMap
 	 *            {@link Map} used to combine with Default {@link Map}
 	 * @return Combined {@link Map}
 	 */
-	public static Map<String, String> combineDefaultMap(Map<String, String> receivedMap) {
+	public static Map<String, String> combineDefaultMap(
+			Map<String, String> receivedMap) {
 		Map<String, String> combinedMap = ConfigManager.getDefaultSDKMap();
 		combinedMap.putAll(receivedMap);
 		return combinedMap;

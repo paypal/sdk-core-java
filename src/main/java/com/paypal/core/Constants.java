@@ -5,20 +5,25 @@ public final class Constants {
 	private Constants() {}
 
 	// General Constants
+	// UTF-8 Encoding format
 	public static final String ENCODING_FORMAT = "UTF-8";
+	
+	// Empty String
 	public static final String EMPTY_STRING = "";
+	
+	// Account prefix used in config properties file
 	public static final String ACCOUNT_PREFIX = "acct";
 
+	// SOAP Payload format
 	public static final String PAYLOAD_FORMAT_SOAP = "SOAP";
+	
+	// NVP Payload format
 	public static final String PAYLOAD_FORMAT_NVP = "NV";
-	public static final String SDK_NAME = "";
-	public static final String SDK_VERSION = "";
 
 	// Default SDK configuration file name
 	public static final String DEFAULT_CONFIGURATION_FILE = "sdk_config.properties";
 
 	// HTTP Header Constants
-
 	// HTTP Content-Type Header
 	public static final String HTTP_CONTENT_TYPE_HEADER = "Content-Type";
 
@@ -54,6 +59,15 @@ public final class Constants {
 
 	// PayPal Device IP Address Header
 	public static final String PAYPAL_DEVICE_IPADDRESS_HEADER = "X-PAYPAL-DEVICE-IPADDRESS";
+	
+	// User Agent Header
+	public static final String USER_AGENT_HEADER = "User-Agent";
+	
+	// PayPal Request ID Header
+	public static final String PAYPAL_REQUEST_ID_HEADER = "PayPal-Request-Id";
+	
+	// Authorization Header
+	public static final String AUTHORIZATION_HEADER = "Authorization";
 
 	// PayPal Sandbox Email Address for AA Header
 	public static final String PAYPAL_SANDBOX_EMAIL_ADDRESS_HEADER = "X-PAYPAL-SANDBOX-EMAIL-ADDRESS";
@@ -137,6 +151,9 @@ public final class Constants {
 
 	// HTTP Content Type JSON
 	public static final String HTTP_CONTENT_TYPE_JSON = "application/json";
+	
+	// HTTP Content Type JSON
+	public static final String HTTP_CONTENT_TYPE_XML = "text/xml";
 
 	// IPN endpoint property name
 	public static final String IPN_ENDPOINT = "service.IPNEndpoint";
@@ -187,12 +204,18 @@ public final class Constants {
 	public static final String OPENID_REDIRECT_URI_CONSTANT_LIVE = "https://www.paypal.com/webapps/auth/protocol/openidconnect";
 	
 	// Open Id redirect URI Constant Sandbox
-	public static final String OPENID_REDIRECT_URI_CONSTANT_SANDBOX = "https://www.sanbox.paypal.com/webapps/auth/protocol/openidconnect";
+	public static final String OPENID_REDIRECT_URI_CONSTANT_SANDBOX = "https://www.sandbox.paypal.com/webapps/auth/protocol/openidconnect";
 
 	// Client ID
 	public static final String CLIENT_ID = "clientId";
 
 	// Client Secret
 	public static final String CLIENT_SECRET = "clientSecret";
+
+	// Java SDK_ID for paypal-core
+	public static final String SDK_ID = "paypal-core-java";
+	
+	// Java SDK_VERSION for paypal-core
+	public static final String SDK_VERSION = "1.5.0";
 
 }

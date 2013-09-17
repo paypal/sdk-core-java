@@ -51,8 +51,6 @@ public class GoogleAppEngineHttpConnection extends HttpConnection {
 
 		this.connection = (HttpURLConnection) url
 				.openConnection(Proxy.NO_PROXY);
-		this.connection.setRequestProperty(Constants.HTTP_CONTENT_TYPE_HEADER,
-				config.getContentType());
 		this.connection.setDoInput(true);
 		this.connection.setDoOutput(true);
 		this.connection.setRequestMethod(config.getHttpMethod());

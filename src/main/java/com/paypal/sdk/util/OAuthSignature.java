@@ -20,8 +20,8 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Base64;
 
+import com.paypal.core.codec.binary.Base64;
 import com.paypal.sdk.exceptions.OAuthException;
 
 public class OAuthSignature {

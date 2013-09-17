@@ -9,6 +9,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.log4testng.Logger;
 
+import com.paypal.core.SDKVersion;
+
 public class OAuthTokenCredentialTestCase {
 
 	private static final Logger logger = Logger
@@ -26,7 +28,8 @@ public class OAuthTokenCredentialTestCase {
 	@Test(priority = 20)
 	public void testGetAccessToken() throws PayPalRESTException {
 		Map<String, String> configurationMap = new HashMap<String, String>();
-		configurationMap.put("service.EndPoint", "https://api.sandbox.paypal.com");
+		configurationMap.put("service.EndPoint",
+				"https://api.sandbox.paypal.com");
 		OAuthTokenCredential merchantTokenCredential = new OAuthTokenCredential(
 				clientID, clientSecret, configurationMap);
 		String accessToken = merchantTokenCredential.getAccessToken();
@@ -38,7 +41,8 @@ public class OAuthTokenCredentialTestCase {
 	public void testErrorAccessToken() {
 		try {
 			Map<String, String> configurationMap = new HashMap<String, String>();
-			configurationMap.put("service.EndPoint", "https://localhost.sandbox.paypal.com");
+			configurationMap.put("service.EndPoint",
+					"https://localhost.sandbox.paypal.com");
 			OAuthTokenCredential merchantTokenCredential = new OAuthTokenCredential(
 					clientID, clientSecret, configurationMap);
 			merchantTokenCredential.getAccessToken();
@@ -46,4 +50,5 @@ public class OAuthTokenCredentialTestCase {
 			Assert.assertEquals(true, e.getCause() instanceof IOException);
 		}
 	}
+
 }

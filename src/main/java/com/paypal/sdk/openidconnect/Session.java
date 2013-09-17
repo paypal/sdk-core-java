@@ -57,10 +57,10 @@ public final class Session {
 					.get(Constants.OPENID_REDIRECT_URI);
 			if (baseURL == null || baseURL.trim().length() <= 0) {
 				if (configurationMap.get(Constants.MODE) == null
-						|| !Constants.LIVE.equalsIgnoreCase(configurationMap
-								.get(Constants.MODE))
-						|| !Constants.SANDBOX.equalsIgnoreCase(configurationMap
-								.get(Constants.MODE))) {
+						|| (!Constants.LIVE.equalsIgnoreCase(configurationMap
+								.get(Constants.MODE)) && !Constants.SANDBOX
+								.equalsIgnoreCase(configurationMap
+										.get(Constants.MODE)))) {
 					throw new RuntimeException(
 							"Mode parameter not set in dynamic configuration map");
 				} else {
@@ -90,7 +90,8 @@ public final class Session {
 			StringBuilder stringBuilder = new StringBuilder();
 
 			// TODO revisit method while removing the similar method without
-			// ClientCredentials
+			// ClientCredentials; ClientID and ClientSecret should not be included
+			// in configuration map - add them to the ClientCredentials class
 			String clientID = null;
 			if (clientCredentials == null) {
 				clientID = configurationMap.get(Constants.CLIENT_ID) != null ? configurationMap
@@ -149,10 +150,10 @@ public final class Session {
 					.get(Constants.OPENID_REDIRECT_URI);
 			if (baseURL == null || baseURL.trim().length() <= 0) {
 				if (configurationMap.get(Constants.MODE) == null
-						|| !Constants.LIVE.equalsIgnoreCase(configurationMap
-								.get(Constants.MODE))
-						|| !Constants.SANDBOX.equalsIgnoreCase(configurationMap
-								.get(Constants.MODE))) {
+						|| (!Constants.LIVE.equalsIgnoreCase(configurationMap
+								.get(Constants.MODE)) && !Constants.SANDBOX
+								.equalsIgnoreCase(configurationMap
+										.get(Constants.MODE)))) {
 					throw new RuntimeException(
 							"Mode parameter not set in dynamic configuration map");
 				} else {

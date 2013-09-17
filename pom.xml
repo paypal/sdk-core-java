@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.paypal.sdk</groupId>
 	<artifactId>paypal-core</artifactId>
-	<version>1.4.5</version>
+	<version>1.5.0</version>
 	<packaging>jar</packaging>
 	<name>paypal-core</name>
 	<description>PayPal Java SDK Core library base and common to PayPal SDKs. The paypal-core library is a dependency for all PayPal related Java SDKs</description>
@@ -29,11 +29,6 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.6</version>
-		</dependency>
-		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>6.8</version>
@@ -43,6 +38,7 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

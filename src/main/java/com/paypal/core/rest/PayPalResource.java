@@ -9,28 +9,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import com.paypal.core.APICallPreHandler;
 import com.paypal.core.ConfigManager;
 import com.paypal.core.ConnectionManager;
+import com.paypal.core.Constants;
 import com.paypal.core.HttpConfiguration;
 import com.paypal.core.HttpConnection;
 import com.paypal.core.LoggingManager;
 import com.paypal.core.SDKUtil;
+import com.paypal.core.SDKVersion;
 
 /**
- * PayPalResource acts as a base class for REST enabled resources
+ * PayPalResource acts as a base class for REST enabled resources.
  */
 public abstract class PayPalResource {
 
-	/**
-	 * SDK ID used in User-Agent HTTP header
+	/*
+	 * The class relies on an implementation of APICallPreHandler (here
+	 * RESTAPICallPreHandler)to get access to endpoint, HTTP headers, and
+	 * payload.
 	 */
-	public static final String SDK_ID = "rest-sdk-java";
-
-	/**
-	 * SDK Version used in User-Agent HTTP header
-	 */
-	public static final String SDK_VERSION = "0.7.1";
-
 	/**
 	 * Map used in dynamic configuration
 	 */
@@ -52,28 +50,10 @@ public abstract class PayPalResource {
 	private static final ThreadLocal<String> LASTRESPONSE = new ThreadLocal<String>();
 
 	/**
-	 * Initialize using InputStream(of a Properties file)
-	 * 
-	 * @param is
-	 *            InputStream
-	 * @throws PayPalRESTException
-	 */
-	public static void initConfig(InputStream inputStream)
-			throws PayPalRESTException {
-		try {
-			Properties properties = new Properties();
-			properties.load(inputStream);
-			configurationMap = SDKUtil.constructMap(properties);
-			configInitialized = true;
-		} catch (IOException ioe) {
-			LoggingManager.severe(PayPalResource.class, ioe.getMessage(), ioe);
-			throw new PayPalRESTException(ioe.getMessage(), ioe);
-		}
-
-	}
-
-	/**
-	 * Initialize using a File(Properties file)
+	 * Initialize the system using a File(Properties file). The system is
+	 * initialized using the given file and if the initialization succeeds the
+	 * default 'sdk_config.properties' can only be loaded by calling the method
+	 * initializeToDefault()
 	 * 
 	 * @param file
 	 *            File object of a properties entity
@@ -95,7 +75,10 @@ public abstract class PayPalResource {
 	}
 
 	/**
-	 * Initialize using Properties
+	 * Initialize using Properties. The system is initialized using the given
+	 * properties object and if the initialization succeeds the default
+	 * 'sdk_config.properties' can only be loaded by calling the method
+	 * initializeToDefault()
 	 * 
 	 * @param properties
 	 *            Properties object
@@ -106,11 +89,41 @@ public abstract class PayPalResource {
 	}
 
 	/**
+	 * Initialize using {@link InputStream}(of a Properties file).. The system
+	 * is initialized using the given {@link InputStream} and if the
+	 * initialization succeeds the default 'sdk_config.properties' can only be
+	 * loaded by calling the method initializeToDefault(). The system is
+	 * initialized with the information after loading defaults for the
+	 * parameters that are not passed as part of the configuration. For defaults
+	 * see {@link ConfigManager}
+	 * 
+	 * @param inputStream
+	 *            InputStream
+	 * @throws PayPalRESTException
+	 */
+	public static void initConfig(InputStream inputStream)
+			throws PayPalRESTException {
+		try {
+			Properties properties = new Properties();
+			properties.load(inputStream);
+
+			/*
+			 * Create a Map instance and combine it with default values
+			 */
+			configurationMap = SDKUtil.constructMap(properties);
+			configInitialized = true;
+		} catch (IOException ioe) {
+			LoggingManager.severe(PayPalResource.class, ioe.getMessage(), ioe);
+			throw new PayPalRESTException(ioe.getMessage(), ioe);
+		}
+	}
+
+	/**
 	 * Initialize to default properties
 	 * 
 	 * @throws PayPalRESTException
 	 */
-	private static void initializeToDefault() throws PayPalRESTException {
+	public static void initializeToDefault() throws PayPalRESTException {
 		configurationMap = SDKUtil.combineDefaultMap(ConfigManager
 				.getInstance().getConfigurationMap());
 	}
@@ -140,7 +153,7 @@ public abstract class PayPalResource {
 	 * @param <T>
 	 *            Response Type for de-serialization
 	 * @param accessToken
-	 *            AccessToken to be used for the call.
+	 *            OAuth AccessToken to be used for the call.
 	 * @param httpMethod
 	 *            Http Method verb
 	 * @param resourcePath
@@ -180,21 +193,44 @@ public abstract class PayPalResource {
 	public static <T> T configureAndExecute(APIContext apiContext,
 			HttpMethod httpMethod, String resourcePath, String payLoad,
 			Class<T> clazz) throws PayPalRESTException {
+		T t = null;
 		Map<String, String> cMap = null;
 		String accessToken = null;
 		String requestId = null;
+		Map<String, String> headersMap = null;
 		if (apiContext != null) {
-			cMap = apiContext.getConfigurationMap();
+			if (apiContext.getConfigurationMap() != null) {
+				cMap = SDKUtil.combineDefaultMap(apiContext
+						.getConfigurationMap());
+			} else {
+				if (!configInitialized) {
+					initializeToDefault();
+				}
+
+				/*
+				 * The Map returned here is already combined with default values
+				 */
+				cMap = new HashMap<String, String>(
+						PayPalResource.configurationMap);
+			}
+			headersMap = apiContext.getHTTPHeaders();
 			accessToken = apiContext.getAccessToken();
 			requestId = apiContext.getRequestId();
+
+			APICallPreHandler apiCallPreHandler = createAPICallPreHandler(cMap,
+					payLoad, resourcePath, headersMap, accessToken, requestId,
+					apiContext.getSdkVersion());
+			HttpConfiguration httpConfiguration = createHttpConfiguration(cMap,
+					httpMethod, apiCallPreHandler);
+			t = execute(apiCallPreHandler, httpConfiguration, clazz);
 		}
-		return configureAndExecute(cMap, accessToken, httpMethod,
-				resourcePath, null, payLoad, requestId, clazz);
+		return t;
 	}
 
 	/**
 	 * Configures and executes REST call: Supports JSON
 	 * 
+	 * @deprecated
 	 * @param <T>
 	 * @param apiContext
 	 *            {@link APIContext} to be used for the call.
@@ -216,11 +252,15 @@ public abstract class PayPalResource {
 			Map<String, String> headersMap, String payLoad, Class<T> clazz)
 			throws PayPalRESTException {
 		Map<String, String> cMap = null;
+		String accessToken = null;
+		String requestId = null;
 		if (apiContext != null) {
 			cMap = apiContext.getConfigurationMap();
+			accessToken = apiContext.getAccessToken();
+			requestId = apiContext.getRequestId();
 		}
-		return configureAndExecute(cMap, null, httpMethod,
-				resourcePath, headersMap, payLoad, null, clazz);
+		return configureAndExecute(cMap, accessToken, httpMethod, resourcePath,
+				headersMap, payLoad, requestId, clazz);
 	}
 
 	private static <T> T configureAndExecute(
@@ -230,97 +270,102 @@ public abstract class PayPalResource {
 			Class<T> clazz) throws PayPalRESTException {
 		T t = null;
 		Map<String, String> cMap = null;
+
+		/*
+		 * Check for null before combining with default
+		 */
 		if (configurationMap != null) {
 			cMap = SDKUtil.combineDefaultMap(configurationMap);
 		} else {
 			if (!configInitialized) {
 				initializeToDefault();
 			}
-			cMap = new HashMap<String, String>(
-					PayPalResource.configurationMap);
-		}
-		RESTConfiguration restConfiguration = createRESTConfiguration(
-				cMap, httpMethod, resourcePath, headersMap,
-				accessToken, requestId);
-		t = execute(restConfiguration, payLoad, resourcePath, clazz);
-		return t;
 
+			/*
+			 * The Map returned here is already combined with default values
+			 */
+			cMap = new HashMap<String, String>(PayPalResource.configurationMap);
+		}
+
+		APICallPreHandler apiCallPreHandler = createAPICallPreHandler(cMap,
+				payLoad, resourcePath, headersMap, accessToken, requestId, null);
+		HttpConfiguration httpConfiguration = createHttpConfiguration(cMap,
+				httpMethod, apiCallPreHandler);
+		t = execute(apiCallPreHandler, httpConfiguration, clazz);
+		return t;
 	}
 
 	/**
-	 * Creates a {@link RESTConfiguration} based on configuration
+	 * Returns a implementation of {@link APICallPreHandler} for the underlying
+	 * layer.
 	 * 
-	 * @param httpMethod
-	 *            {@link HttpMethod}
+	 * @param configurationMap
+	 *            configuration Map
+	 * @param payLoad
+	 *            Raw payload
 	 * @param resourcePath
-	 *            Resource URI
+	 *            URI part of the resource operated on
+	 * @param headersMap
+	 *            Custom HTTP headers map
 	 * @param accessToken
-	 *            Access Token
+	 *            OAuth Token
 	 * @param requestId
-	 *            Request Id
+	 *            PayPal Request Id
+	 * @param sdkVersion
+	 *            {@link SDKVersion} instance
 	 * @return
 	 */
-	private static RESTConfiguration createRESTConfiguration(
-			Map<String, String> configurationMap, HttpMethod httpMethod,
+	public static APICallPreHandler createAPICallPreHandler(
+			Map<String, String> configurationMap, String payLoad,
 			String resourcePath, Map<String, String> headersMap,
-			String accessToken, String requestId) {
-		RESTConfiguration restConfiguration = new RESTConfiguration(
+			String accessToken, String requestId, SDKVersion sdkVersion) {
+		APICallPreHandler apiCallPreHandler = null;
+		RESTAPICallPreHandler restAPICallPreHandler = new RESTAPICallPreHandler(
 				configurationMap, headersMap);
-		restConfiguration.setHttpMethod(httpMethod);
-		restConfiguration.setResourcePath(resourcePath);
-		restConfiguration.setRequestId(requestId);
-		restConfiguration.setAuthorizationToken(accessToken);
-		return restConfiguration;
+		restAPICallPreHandler.setResourcePath(resourcePath);
+		restAPICallPreHandler.setRequestId(requestId);
+		restAPICallPreHandler.setAuthorizationToken(accessToken);
+		restAPICallPreHandler.setPayLoad(payLoad);
+		restAPICallPreHandler.setSdkVersion(sdkVersion);
+		apiCallPreHandler = restAPICallPreHandler;
+		return apiCallPreHandler;
 	}
 
 	/**
 	 * Execute the API call and return response
 	 * 
 	 * @param <T>
-	 *            Type of the return object
-	 * @param restConfiguration
-	 *            {@link RESTConfiguration}
-	 * @param payLoad
-	 *            Payload
-	 * @param resourcePath
-	 *            Resource URI
+	 *            Generic Type for response object construction
+	 * @param apiCallPreHandler
+	 *            Implementation of {@link APICallPreHandler}
+	 * @param httpConfiguration
+	 *            {@link HttpConfiguration}
 	 * @param clazz
-	 *            Class of the return object
-	 * @return API response type object
+	 *            Response Object class
+	 * @return Response Type
 	 * @throws PayPalRESTException
-	 * @throws URISyntaxException
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws ClientActionRequiredException
-	 * @throws HttpErrorException
-	 * @throws InvalidResponseDataException
 	 */
-	private static <T> T execute(RESTConfiguration restConfiguration,
-			String payLoad, String resourcePath, Class<T> clazz)
+	private static <T> T execute(APICallPreHandler apiCallPreHandler,
+			HttpConfiguration httpConfiguration, Class<T> clazz)
 			throws PayPalRESTException {
 		T t = null;
 		ConnectionManager connectionManager;
 		HttpConnection httpConnection;
-		HttpConfiguration httpConfig;
 		Map<String, String> headers;
 		String responseString;
 		try {
 
 			// REST Headers
-			headers = restConfiguration.getHeaders();
-
-			// HTTPConfiguration Object
-			httpConfig = restConfiguration.getHttpConfigurations();
+			headers = apiCallPreHandler.getHeaderMap();
 
 			// HttpConnection Initialization
 			connectionManager = ConnectionManager.getInstance();
-			httpConnection = connectionManager.getConnection(httpConfig);
-			httpConnection.createAndconfigureHttpConnection(httpConfig);
+			httpConnection = connectionManager.getConnection(httpConfiguration);
+			httpConnection.createAndconfigureHttpConnection(httpConfiguration);
 
-			LASTREQUEST.set(payLoad);
-			responseString = httpConnection.execute(restConfiguration
-					.getBaseURL().toURI().resolve(resourcePath).toString(),
-					payLoad, headers);
+			LASTREQUEST.set(apiCallPreHandler.getPayLoad());
+			responseString = httpConnection.execute(null,
+					apiCallPreHandler.getPayLoad(), headers);
 			LASTRESPONSE.set(responseString);
 			if (clazz != null) {
 				t = JSONFormatter.fromJSON(responseString, clazz);
@@ -329,6 +374,55 @@ public abstract class PayPalResource {
 			throw new PayPalRESTException(e.getMessage(), e);
 		}
 		return t;
+	}
+
+	/**
+	 * Utility method that creates a {@link HttpConfiguration} object from the
+	 * passed information
+	 * 
+	 * @param configurationMap
+	 *            Configuration to base the construction upon.
+	 * @param httpMethod
+	 *            HTTP Method
+	 * @param contentType
+	 *            Content-Type header
+	 * @param apiCallPreHandler
+	 *            {@link APICallPreHandler} for retrieving EndPoint
+	 * @return
+	 */
+	private static HttpConfiguration createHttpConfiguration(
+			Map<String, String> configurationMap, HttpMethod httpMethod,
+			APICallPreHandler apiCallPreHandler) {
+		HttpConfiguration httpConfiguration = new HttpConfiguration();
+		httpConfiguration.setHttpMethod(httpMethod.toString());
+		httpConfiguration.setEndPointUrl(apiCallPreHandler.getEndPoint());
+		httpConfiguration
+				.setGoogleAppEngine(Boolean.parseBoolean(configurationMap
+						.get(Constants.GOOGLE_APP_ENGINE)));
+		if (Boolean.parseBoolean(configurationMap
+				.get((Constants.USE_HTTP_PROXY)))) {
+			httpConfiguration.setProxyPort(Integer.parseInt(configurationMap
+					.get((Constants.HTTP_PROXY_PORT))));
+			httpConfiguration.setProxyHost(configurationMap
+					.get((Constants.HTTP_PROXY_HOST)));
+			httpConfiguration.setProxyUserName(configurationMap
+					.get((Constants.HTTP_PROXY_USERNAME)));
+			httpConfiguration.setProxyPassword(configurationMap
+					.get((Constants.HTTP_PROXY_PASSWORD)));
+		}
+		httpConfiguration.setConnectionTimeout(Integer
+				.parseInt(configurationMap
+						.get(Constants.HTTP_CONNECTION_TIMEOUT)));
+		httpConfiguration.setMaxRetry(Integer.parseInt(configurationMap
+				.get(Constants.HTTP_CONNECTION_RETRY)));
+		httpConfiguration.setReadTimeout(Integer.parseInt(configurationMap
+				.get(Constants.HTTP_CONNECTION_READ_TIMEOUT)));
+		httpConfiguration.setMaxHttpConnection(Integer
+				.parseInt(configurationMap
+						.get(Constants.HTTP_CONNECTION_MAX_CONNECTION)));
+		httpConfiguration.setIpAddress(configurationMap
+				.get(Constants.DEVICE_IP_ADDRESS));
+		return httpConfiguration;
 	}
 
 }
