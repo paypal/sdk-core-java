@@ -107,8 +107,7 @@ public class IPNMessage {
 				String name = entry.getKey();
 				String[] value = entry.getValue();
 				try {
-					this.ipnMap.put(name,
-							 URLDecoder.decode(value[0], encoding));
+					this.ipnMap.put(name, value[0]);
 					payload.append("&").append(name).append("=")
 							.append(URLEncoder.encode(value[0], encoding));
 				} catch (Exception e) {
