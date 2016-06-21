@@ -84,3 +84,11 @@ The core uses .properties format configuration file. Sample of this file is at '
 
     info.createFromRefreshToken(apiContext, param);
 ```
+
+License
+-------
+Code released under [SDK LICENSE](LICENSE)
+
+Contributions
+-------------
+Pull requests and new issues are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
