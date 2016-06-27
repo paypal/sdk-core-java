@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/paypal/sdk-core-java.svg?branch=master)](https://travis-ci.org/paypal/sdk-core-java)
+[![Build Status](https://travis-ci.org/paypal/sdk-core-java.svg?branch=master)](https://travis-ci.org/paypal/sdk-core-java) [![Coverage Status](https://coveralls.io/repos/github/paypal/sdk-core-java/badge.svg?branch=master)](https://coveralls.io/github/paypal/sdk-core-java?branch=master)
 
 This repository contains core files for all Java sdks.
 

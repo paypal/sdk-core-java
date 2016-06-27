@@ -2,6 +2,8 @@ sudo: false
 language: java
 jdk:
   - oraclejdk7
+after_success:
+  - mvn cobertura:cobertura coveralls:report -DrepoToken=$token_core_java
 after_script: mvn test 
 notifications:
   recipients:
