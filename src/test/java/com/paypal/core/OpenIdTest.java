@@ -82,7 +82,7 @@ public class OpenIdTest {
 	public void testRedirectURL() {
 		Map<String, String> m = new HashMap<String, String>();
 		m.put("openid.RedirectUri",
-				"https://www.paypal.com/webapps/auth/protocol/openidconnect");
+				"https://www.paypal.com/signin");
 		m.put("clientId", "ANdfsalkoiarT");
 		List<String> l = new ArrayList<String>();
 		l.add("openid");
@@ -94,14 +94,14 @@ public class OpenIdTest {
 		logger.info("Redirect URL: " + redirectURL);
 		Assert.assertEquals(
 				redirectURL,
-				"https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize?client_id=ANdfsalkoiarT&response_type=code&scope=openid+profile+&redirect_uri=http%3A%2F%2Fgoogle.com");
+				"https://www.paypal.com/signin/authorize?client_id=ANdfsalkoiarT&response_type=code&scope=openid+profile+&redirect_uri=http%3A%2F%2Fgoogle.com");
 	}
 
 	@Test()
 	public void testRedirectURLClientCredentials() {
 		Map<String, String> m = new HashMap<String, String>();
 		m.put("openid.RedirectUri",
-				"https://www.paypal.com/webapps/auth/protocol/openidconnect");
+				"https://www.paypal.com/signin");
 		ClientCredentials clientCredentials = new ClientCredentials();
 		clientCredentials.setClientID("ANdfsalkoiarT");
 		List<String> l = new ArrayList<String>();
@@ -114,7 +114,7 @@ public class OpenIdTest {
 		logger.info("Redirect URL: " + redirectURL);
 		Assert.assertEquals(
 				redirectURL,
-				"https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize?client_id=ANdfsalkoiarT&response_type=code&scope=openid+profile+&redirect_uri=http%3A%2F%2Fgoogle.com");
+				"https://www.paypal.com/signin/authorize?client_id=ANdfsalkoiarT&response_type=code&scope=openid+profile+&redirect_uri=http%3A%2F%2Fgoogle.com");
 	}
 
 	@Test()
@@ -133,7 +133,7 @@ public class OpenIdTest {
 		logger.info("Redirect URL: " + redirectURL);
 		Assert.assertEquals(
 				redirectURL,
-				"https://www.sandbox.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize?client_id=ANdfsalkoiarT&response_type=code&scope=openid+profile+&redirect_uri=http%3A%2F%2Fgoogle.com");
+				"https://www.sandbox.paypal.com/signin/authorize?client_id=ANdfsalkoiarT&response_type=code&scope=openid+profile+&redirect_uri=http%3A%2F%2Fgoogle.com");
 	}
 
 	@Test()
@@ -152,7 +152,7 @@ public class OpenIdTest {
 		logger.info("Redirect URL: " + redirectURL);
 		Assert.assertEquals(
 				redirectURL,
-				"https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize?client_id=ANdfsalkoiarT&response_type=code&scope=openid+profile+&redirect_uri=http%3A%2F%2Fgoogle.com");
+				"https://www.paypal.com/signin/authorize?client_id=ANdfsalkoiarT&response_type=code&scope=openid+profile+&redirect_uri=http%3A%2F%2Fgoogle.com");
 	}
 
 	@Test(expectedExceptions = RuntimeException.class)
@@ -179,14 +179,14 @@ public class OpenIdTest {
 		logger.info("Redirect URL: " + logoutURL);
 		Assert.assertEquals(
 				logoutURL,
-				"https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/endsession?id_token=tokenId&redirect_uri=http%3A%2F%2Fgoogle.com&logout=true");
+				"https://www.paypal.com/signin/endsession?id_token=tokenId&redirect_uri=http%3A%2F%2Fgoogle.com&logout=true");
 	}
 
 	@Test()
 	public void testLogoutURL() {
 		Map<String, String> m = new HashMap<String, String>();
 		m.put("openid.RedirectUri",
-				"https://www.paypal.com/webapps/auth/protocol/openidconnect");
+				"https://www.paypal.com/signin");
 		APIContext apiContext = new APIContext();
 		apiContext.setConfigurationMap(m);
 		String logoutURL = Session.getLogoutUrl("http://google.com", "tokenId",
@@ -194,7 +194,7 @@ public class OpenIdTest {
 		logger.info("Logout URL: " + logoutURL);
 		Assert.assertEquals(
 				logoutURL,
-				"https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/endsession?id_token=tokenId&redirect_uri=http%3A%2F%2Fgoogle.com&logout=true");
+				"https://www.paypal.com/signin/endsession?id_token=tokenId&redirect_uri=http%3A%2F%2Fgoogle.com&logout=true");
 	}
 
 	@Test()
@@ -208,7 +208,7 @@ public class OpenIdTest {
 		logger.info("Logout URL: " + logoutURL);
 		Assert.assertEquals(
 				logoutURL,
-				"https://www.sandbox.paypal.com/webapps/auth/protocol/openidconnect/v1/endsession?id_token=tokenId&redirect_uri=http%3A%2F%2Fgoogle.com&logout=true");
+				"https://www.sandbox.paypal.com/signin/endsession?id_token=tokenId&redirect_uri=http%3A%2F%2Fgoogle.com&logout=true");
 	}
 
 	@Test()
@@ -222,7 +222,7 @@ public class OpenIdTest {
 		logger.info("Logout URL: " + logoutURL);
 		Assert.assertEquals(
 				logoutURL,
-				"https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/endsession?id_token=tokenId&redirect_uri=http%3A%2F%2Fgoogle.com&logout=true");
+				"https://www.paypal.com/signin/endsession?id_token=tokenId&redirect_uri=http%3A%2F%2Fgoogle.com&logout=true");
 	}
 
 }
