@@ -114,7 +114,7 @@ public final class Session {
 					Constants.ENCODING_FORMAT));
 			stringBuilder.append("&redirect_uri=").append(
 					URLEncoder.encode(redirectURI, Constants.ENCODING_FORMAT));
-			redirectURL = baseURL + "/authorize?" + stringBuilder.toString();
+			redirectURL = baseURL + "/signin/authorize?" + stringBuilder.toString();
 		} catch (UnsupportedEncodingException exe) {
 			// Ignore
 		}
@@ -175,7 +175,7 @@ public final class Session {
 					.append("&redirect_uri=")
 					.append(URLEncoder.encode(redirectURI,
 							Constants.ENCODING_FORMAT)).append("&logout=true");
-			logoutURL = baseURL + "/endsession?" + stringBuilder.toString();
+			logoutURL = baseURL + "/webapps/auth/protocol/openidconnect/v1/endsession?" + stringBuilder.toString();
 		} catch (UnsupportedEncodingException exe) {
 			// Ignore
 		}
