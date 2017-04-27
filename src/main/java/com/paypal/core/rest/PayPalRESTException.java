@@ -3,7 +3,7 @@ package com.paypal.core.rest;
 /**
  * PayPalException handles all exceptions related to REST services
  */
-public class PayPalRESTException extends Exception {
+public class PayPalRESTException extends HttpErrorException {
 
 	/**
 	 * Serial Version ID
