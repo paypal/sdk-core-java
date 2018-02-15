@@ -2,6 +2,10 @@
 
 This repository contains core files for all Java sdks.
 
+## Support
+
+> Please contact [PayPal Technical Support](https://developer.paypal.com/support/) for any live or account issues.
+
 ## Prerequisites:
 *	Java JDK-1.5 or higher
 *	Apache Maven 3 or higher
